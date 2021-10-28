@@ -3,27 +3,30 @@ package ieti.orders.service;
 import ieti.orders.dto.OrderDto;
 import ieti.orders.repository.OrderDocument;
 import ieti.orders.repository.OrderRepository;
-import ieti.orders.repository.SaleRepository;
+import ieti.orders.repository.ProductRepository;
 import org.springframework.stereotype.Service;
-import models.SaleDocument;
 import error.exception.NotFoundException;
+import error.exception.UnavailableProductsException;
+import models.ProductDocument;
 
+import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class OrderServices {
 
     private final OrderRepository orderRepository;
-    private final SaleRepository saleRepository;
+    private final ProductRepository productRepository;
 
-    public OrderServices(OrderRepository orderRepository, SaleRepository saleRepository) {
+    public OrderServices(OrderRepository orderRepository, ProductRepository productRepository) {
         this.orderRepository=orderRepository;
-        this.saleRepository=saleRepository;
+        this.productRepository=productRepository;
     }
 
     public OrderDocument create(OrderDto orderDto){
         OrderDocument order = new OrderDocument(orderDto);
-        return orderRepository.save(order);
+        if(existsProducts(order.getProducts())) return orderRepository.save(order);
+        throw new UnavailableProductsException("Some products do not exist.");
     }
 
     public OrderDocument updateOrder(String id, OrderDto orderDto){
@@ -45,5 +48,22 @@ public class OrderServices {
         throw new NotFoundException("Order not found.");
     }
 
+    public boolean delete(String id) {
+        OrderDocument order = orderRepository.findById(id).orElse(null);
+        if (order != null) {
+            orderRepository.deleteById(id);
+            return true;
+        }
+        throw new NotFoundException("Sale not found");
+    }
+
+    private boolean existsProducts(HashMap<String,Integer> products) {
+        for (String product: products.keySet()) {
+            if(productRepository.findById(product).orElse(null)==null) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

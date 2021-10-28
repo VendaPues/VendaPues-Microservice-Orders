@@ -37,4 +37,9 @@ public class OrderController {
         if(orderDto==null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return ResponseEntity.ok(orderServices.updateOrder(id, orderDto));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable String id){
+        return ResponseEntity.ok(orderServices.delete(id));
+    }
 }

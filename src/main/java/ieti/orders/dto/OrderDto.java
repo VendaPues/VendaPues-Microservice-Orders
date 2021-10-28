@@ -1,27 +1,26 @@
 package ieti.orders.dto;
 
+import ieti.orders.repository.OrderDocument;
+
+import java.util.HashMap;
 import java.util.List;
 
 public class OrderDto {
-    List<String> sales;
+
+    HashMap<String,Integer> products;
 
     Double totalPrice;
 
-    public List<String> getSales() {
-        return sales;
+    public HashMap<String,Integer> getProducts() {
+        return products;
     }
 
-    public void setSales(List<String> sales) {
-        this.sales = sales;
+    public void setProducts(HashMap<String, Integer> products) {
+        this.products = products;
     }
 
     public Double getTotalPrice() {
-        Double price = 0.0;
-        List<SalesDocument> salesDoc= (List<ProductDocument>) sales;
-        for(SalesDocument sale : salesDoc){
-            price+=sale.getAmount();
-        }
-        return price;
+        return totalPrice;
     }
 
     public void setTotalPrice(Double totalPrice) {
